@@ -1,5 +1,6 @@
 #include "loginwindow.h"
 
+#include "uitheme.h"
 #include "usermanager.h"
 
 #include <QFormLayout>
@@ -14,75 +15,81 @@ LoginWindow::LoginWindow(QWidget *parent)
     : QWidget(parent)
 {
     setWindowTitle(QStringLiteral("五子棋 · 登录"));
-    setFixedSize(420, 480);
-    setStyleSheet(QStringLiteral(
-        "QWidget { background-color: #f7f3ec; font-size: 14px; }"
-        "QLabel#appTitle { font-size: 34px; font-weight: bold; color: #5b3a1e; }"
-        "QLabel#appSubtitle { font-size: 13px; color: #8a6d4b; }"
-        "QLabel#hintLabel { font-size: 12px; }"
-        "QLineEdit {"
-        "  padding: 8px; border: 1px solid #c9b58a; border-radius: 6px;"
-        "  background: #ffffff; }"
-        "QLineEdit:focus { border: 1px solid #b34700; }"
-        "QPushButton#primaryButton {"
-        "  font-size: 16px; font-weight: bold; padding: 10px 0; border-radius: 8px;"
-        "  border: none; background-color: #b34700; color: #ffffff; }"
-        "QPushButton#primaryButton:hover { background-color: #8f3800; }"
-        "QTabWidget::pane { border: 1px solid #d9cba9; border-radius: 8px; top: -1px; }"
-        "QTabBar::tab { padding: 8px 26px; font-size: 14px; }"
-        "QTabBar::tab:selected { color: #b34700; font-weight: bold; }"));
+    setFixedSize(440, 560);
+    setStyleSheet(wuziqiStyleSheet());
 
     auto *rootLayout = new QVBoxLayout(this);
-    rootLayout->setContentsMargins(28, 20, 28, 20);
-    rootLayout->setSpacing(10);
+    rootLayout->setContentsMargins(32, 22, 32, 22);
+    rootLayout->setSpacing(6);
 
-    auto *title = new QLabel(QStringLiteral("五子棋"), this);
+    // ---------- 顶部徽标 + 标题 ----------
+    auto *headerLayout = new QVBoxLayout();
+    headerLayout->setSpacing(4);
+    headerLayout->setAlignment(Qt::AlignHCenter);
+
+    auto *badge = new QLabel(QStringLiteral("五"), this);
+    badge->setObjectName(QStringLiteral("stoneBadge"));
+    badge->setFixedSize(66, 66);
+    badge->setAlignment(Qt::AlignCenter);
+    headerLayout->addWidget(badge, 0, Qt::AlignHCenter);
+
+    auto *title = new QLabel(QStringLiteral("五 子 棋"), this);
     title->setObjectName(QStringLiteral("appTitle"));
     title->setAlignment(Qt::AlignCenter);
-    rootLayout->addWidget(title);
+    headerLayout->addWidget(title);
 
-    auto *subtitle = new QLabel(QStringLiteral("人机对战 · 五子连珠"), this);
+    auto *subtitle = new QLabel(QStringLiteral("人 机 对 战 · 五 子 连 珠"), this);
     subtitle->setObjectName(QStringLiteral("appSubtitle"));
     subtitle->setAlignment(Qt::AlignCenter);
-    rootLayout->addWidget(subtitle);
+    headerLayout->addWidget(subtitle);
+
+    rootLayout->addLayout(headerLayout);
+    rootLayout->addSpacing(10);
 
     m_tabs = new QTabWidget(this);
     rootLayout->addWidget(m_tabs, 1);
 
     // ---------- 登录页 ----------
     auto *loginPage = new QWidget(m_tabs);
+    loginPage->setStyleSheet(QStringLiteral("background: transparent;"));
     auto *loginLayout = new QVBoxLayout(loginPage);
-    loginLayout->setContentsMargins(20, 18, 20, 18);
+    loginLayout->setContentsMargins(22, 18, 22, 16);
     loginLayout->setSpacing(12);
 
     auto *loginForm = new QFormLayout();
-    loginForm->setLabelAlignment(Qt::AlignRight);
-    loginForm->setSpacing(10);
+    loginForm->setLabelAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    loginForm->setFormAlignment(Qt::AlignHCenter);
+    loginForm->setSpacing(12);
+    loginForm->setHorizontalSpacing(14);
 
     m_loginUserEdit = new QLineEdit(loginPage);
     m_loginUserEdit->setPlaceholderText(QStringLiteral("请输入用户名"));
+    m_loginUserEdit->setMinimumHeight(42);
     m_loginPassEdit = new QLineEdit(loginPage);
     m_loginPassEdit->setPlaceholderText(QStringLiteral("请输入密码"));
     m_loginPassEdit->setEchoMode(QLineEdit::Password);
+    m_loginPassEdit->setMinimumHeight(42);
     loginForm->addRow(QStringLiteral("用户名"), m_loginUserEdit);
-    loginForm->addRow(QStringLiteral("密　码"), m_loginPassEdit);
+    loginForm->addRow(QStringLiteral("密码"), m_loginPassEdit);
     loginLayout->addLayout(loginForm);
 
     m_loginHint = new QLabel(loginPage);
     m_loginHint->setObjectName(QStringLiteral("hintLabel"));
     m_loginHint->setWordWrap(true);
+    m_loginHint->setAlignment(Qt::AlignCenter);
     m_loginHint->setMinimumHeight(34);
     loginLayout->addWidget(m_loginHint);
 
     auto *loginButton = new QPushButton(QStringLiteral("登 录"), loginPage);
     loginButton->setObjectName(QStringLiteral("primaryButton"));
+    loginButton->setMinimumHeight(46);
     loginLayout->addWidget(loginButton);
 
     auto *accountPathLabel = new QLabel(QStringLiteral("账号文件：%1").arg(UserManager::storageFilePath()),
                                         loginPage);
-    accountPathLabel->setObjectName(QStringLiteral("hintLabel"));
-    accountPathLabel->setStyleSheet(QStringLiteral("color: #a09078; font-size: 10px;"));
+    accountPathLabel->setObjectName(QStringLiteral("mutedLabel"));
     accountPathLabel->setWordWrap(true);
+    accountPathLabel->setAlignment(Qt::AlignCenter);
     loginLayout->addWidget(accountPathLabel);
 
     loginLayout->addStretch(1);
@@ -90,40 +97,48 @@ LoginWindow::LoginWindow(QWidget *parent)
 
     // ---------- 注册页 ----------
     auto *regPage = new QWidget(m_tabs);
+    regPage->setStyleSheet(QStringLiteral("background: transparent;"));
     auto *regLayout = new QVBoxLayout(regPage);
-    regLayout->setContentsMargins(20, 18, 20, 18);
+    regLayout->setContentsMargins(22, 18, 22, 16);
     regLayout->setSpacing(12);
 
     auto *regForm = new QFormLayout();
-    regForm->setLabelAlignment(Qt::AlignRight);
-    regForm->setSpacing(10);
+    regForm->setLabelAlignment(Qt::AlignRight | Qt::AlignVCenter);
+    regForm->setFormAlignment(Qt::AlignHCenter);
+    regForm->setSpacing(12);
+    regForm->setHorizontalSpacing(14);
 
     m_regUserEdit = new QLineEdit(regPage);
     m_regUserEdit->setPlaceholderText(QStringLiteral("1-32 个字符"));
+    m_regUserEdit->setMinimumHeight(42);
     m_regPassEdit = new QLineEdit(regPage);
     m_regPassEdit->setPlaceholderText(QStringLiteral("不少于 6 位"));
     m_regPassEdit->setEchoMode(QLineEdit::Password);
+    m_regPassEdit->setMinimumHeight(42);
     m_regConfirmEdit = new QLineEdit(regPage);
     m_regConfirmEdit->setPlaceholderText(QStringLiteral("再次输入密码"));
     m_regConfirmEdit->setEchoMode(QLineEdit::Password);
+    m_regConfirmEdit->setMinimumHeight(42);
     regForm->addRow(QStringLiteral("用户名"), m_regUserEdit);
-    regForm->addRow(QStringLiteral("密　码"), m_regPassEdit);
+    regForm->addRow(QStringLiteral("密码"), m_regPassEdit);
     regForm->addRow(QStringLiteral("确认密码"), m_regConfirmEdit);
     regLayout->addLayout(regForm);
 
     m_regHint = new QLabel(regPage);
     m_regHint->setObjectName(QStringLiteral("hintLabel"));
     m_regHint->setWordWrap(true);
+    m_regHint->setAlignment(Qt::AlignCenter);
     m_regHint->setMinimumHeight(34);
     regLayout->addWidget(m_regHint);
 
     auto *registerButton = new QPushButton(QStringLiteral("注 册"), regPage);
     registerButton->setObjectName(QStringLiteral("primaryButton"));
+    registerButton->setMinimumHeight(46);
     regLayout->addWidget(registerButton);
 
-    auto *tipLabel = new QLabel(QStringLiteral("密码经加盐哈希后存储，不会明文保存。"), regPage);
-    tipLabel->setObjectName(QStringLiteral("hintLabel"));
-    tipLabel->setStyleSheet(QStringLiteral("color: #a09078; font-size: 10px;"));
+    auto *tipLabel = new QLabel(QStringLiteral("密码经加盐哈希后存储，不会明文保存"), regPage);
+    tipLabel->setObjectName(QStringLiteral("mutedLabel"));
+    tipLabel->setAlignment(Qt::AlignCenter);
     regLayout->addWidget(tipLabel);
 
     regLayout->addStretch(1);

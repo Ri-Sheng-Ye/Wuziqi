@@ -15,6 +15,7 @@ qt_add_executable(Wuziqi
     mainwindow.h
     loginwindow.cpp
     loginwindow.h
+    uitheme.h
     usermanager.cpp
     usermanager.h
     gamewindow.cpp

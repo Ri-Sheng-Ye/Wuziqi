@@ -31,7 +31,7 @@ private:
     bool isBoardFull() const;
     bool checkWin(int row, int col, int color) const;
     void finishIfGameOver(int lastRow, int lastCol, int color);
-    void updateStatus(const QString &text, const QString &color);
+    void updateStatus(const QString &text, const QString &foreground, const QString &background);
     void updateMoveCount();
 
     QString m_username;
