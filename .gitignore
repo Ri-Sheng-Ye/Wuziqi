@@ -1,0 +1,8 @@
+build/
+out/
+*.user
+*.autosave
+CMakeLists.txt.user
+.cache/
+__pycache__/
+*.db
